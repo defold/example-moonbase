@@ -143,3 +143,7 @@ python3 tools/build.py --platform wasm-web --graphics webgpu
 ```
 
 WebGPU is the default browser build; `--graphics webgl` produces a WebGL comparison build. The helper isolates web outputs, Emscripten caches and SDK writes from the native build. Dawn’s `emdawnwebgpu` port is downloaded on the first WebGPU build. The sample enables the checkout’s current WebGPU C API path and WGSL shaders; a generated backend copy supplies a finite depth-clear default required by the port. The engine checkout stays unchanged. Bob resolves HTML locally and then uses the adapter manifest to include its WebGPU startup probe. It builds missing Bullet libraries from the checkout. The sample CMake configuration uses the browser virtual filesystem, current browser baselines and `-fno-strict-aliasing` for the SDK's scalar vectormath. The HTML creates raw archive files synchronously for compatibility with newer Emscripten preload behavior.
+
+## License
+
+This example is licensed under the [MIT License](LICENSE.txt). The bundled Press Start 2P font uses the [SIL Open Font License](main/fonts/OFL.txt).
