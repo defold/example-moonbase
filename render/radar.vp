@@ -1,0 +1,12 @@
+#version 140
+in vec3 position;
+in vec4 instance_position;
+in vec4 instance_data;
+out vec4 var_color;
+uniform vertex_uniforms { mat4 view_proj; };
+void main() {
+    vec2 p = vec2(24.0) + vec2(instance_position.x + 768.0, 768.0 - instance_position.y) * (162.0 / 1536.0);
+    gl_Position = view_proj * vec4((p + position.xy * 1.4) * instance_data.w, 0.0, 1.0);
+    vec3 team = mix(vec3(0.27, 0.61, 0.94), vec3(0.77, 0.24, 0.20), instance_data.x);
+    var_color = vec4(mix(team, vec3(0.58, 0.88, 0.29), instance_data.y), 1.0);
+}

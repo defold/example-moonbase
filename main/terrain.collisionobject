@@ -1,0 +1,47 @@
+type: COLLISION_OBJECT_TYPE_STATIC
+mass: 0
+friction: 0
+restitution: 0
+group: "terrain"
+mask: "unit"
+event_collision: false
+event_contact: false
+event_trigger: false
+embedded_collision_shape {
+shapes { shape_type: TYPE_BOX position { x: 0 y: -3 z: 0 } rotation { x: 0 y: 0 z: 0 w: 1 } index: 0 count: 3 id: "blocker_0" }
+shapes { shape_type: TYPE_BOX position { x: -340 y: 14.0 z: -200 } rotation { x: 0 y: 0 z: 0 w: 1 } index: 3 count: 3 id: "blocker_1" }
+shapes { shape_type: TYPE_BOX position { x: -340 y: 17.0 z: 210 } rotation { x: 0 y: 0 z: 0 w: 1 } index: 6 count: 3 id: "blocker_2" }
+shapes { shape_type: TYPE_BOX position { x: 340 y: 17.0 z: -210 } rotation { x: 0 y: 0 z: 0 w: 1 } index: 9 count: 3 id: "blocker_3" }
+shapes { shape_type: TYPE_BOX position { x: 340 y: 14.0 z: 200 } rotation { x: 0 y: 0 z: 0 w: 1 } index: 12 count: 3 id: "blocker_4" }
+shapes { shape_type: TYPE_BOX position { x: -100 y: 11.5 z: -190 } rotation { x: 0 y: 0 z: 0 w: 1 } index: 15 count: 3 id: "blocker_5" }
+shapes { shape_type: TYPE_BOX position { x: 100 y: 11.5 z: 190 } rotation { x: 0 y: 0 z: 0 w: 1 } index: 18 count: 3 id: "blocker_6" }
+shapes { shape_type: TYPE_BOX position { x: -95 y: 18.0 z: 490 } rotation { x: 0 y: 0 z: 0 w: 1 } index: 21 count: 3 id: "blocker_7" }
+shapes { shape_type: TYPE_BOX position { x: 95 y: 18.0 z: -490 } rotation { x: 0 y: 0 z: 0 w: 1 } index: 24 count: 3 id: "blocker_8" }
+data: 1536
+data: 4
+data: 1536
+data: 65.05319999999999
+data: 28
+data: 65.05319999999999
+data: 77.78099999999999
+data: 34
+data: 77.78099999999999
+data: 77.78099999999999
+data: 34
+data: 77.78099999999999
+data: 65.05319999999999
+data: 28
+data: 65.05319999999999
+data: 53.739599999999996
+data: 23
+data: 53.739599999999996
+data: 53.739599999999996
+data: 23
+data: 53.739599999999996
+data: 91.92299999999999
+data: 36
+data: 91.92299999999999
+data: 91.92299999999999
+data: 36
+data: 91.92299999999999
+}

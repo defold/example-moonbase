@@ -1,0 +1,5 @@
+mesh: "/models/siege.gltf"
+mesh_index: 0
+mesh_name: "close"
+materials { name: "vehicle" material: "/render/unit.material" }
+create_go_bones: false

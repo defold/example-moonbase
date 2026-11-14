@@ -1,0 +1,63 @@
+function init(self)
+	self.offscreen = sys.get_config_int("moonbase.offscreen", 0) == 1
+	if self.offscreen then
+		self.capture_w = sys.get_config_int("moonbase.offscreen_width", 1440)
+		self.capture_h = sys.get_config_int("moonbase.offscreen_height", 900)
+		self.target = render.render_target({
+			[graphics.BUFFER_TYPE_COLOR0_BIT] = {format = graphics.TEXTURE_FORMAT_RGBA, width = self.capture_w, height = self.capture_h},
+			[graphics.BUFFER_TYPE_DEPTH_BIT] = {format = graphics.TEXTURE_FORMAT_DEPTH, width = self.capture_w, height = self.capture_h},
+			[graphics.BUFFER_TYPE_STENCIL_BIT] = {format = graphics.TEXTURE_FORMAT_STENCIL, width = self.capture_w, height = self.capture_h},
+		})
+	end
+	self.world = render.predicate({"moon_world"})
+	self.selection = render.predicate({"moon_selection"})
+	self.overlay = render.predicate({"moon_overlay"})
+	self.radar = render.predicate({"moon_radar"})
+	self.overlay_top = render.predicate({"moon_overlay_top"})
+	self.gui = render.predicate({"gui"})
+	self.text = render.predicate({"text"})
+end
+
+function update(self)
+	moonbase.submit()
+	local w, h = render.get_window_width(), render.get_window_height()
+	if self.offscreen then
+		w, h = self.capture_w, self.capture_h
+		render.set_render_target(self.target)
+	end
+	if w < 1 or h < 1 then return end
+	local scale = self.offscreen and 1 or math.max(1, window.get_display_scale())
+	local ui_w, ui_h = w / scale, h / scale
+	local x, z, span = moonbase.camera(ui_w, ui_h, scale)
+	render.set_viewport(0, 0, w, h)
+	render.set_depth_mask(true)
+	render.clear({[graphics.BUFFER_TYPE_COLOR0_BIT] = vmath.vector4(0.22, 0.33, 0.15, 1), [graphics.BUFFER_TYPE_DEPTH_BIT] = 1})
+	render.set_view(vmath.matrix4_look_at(vmath.vector3(x, 1000, z + 1000), vmath.vector3(x, 0, z), vmath.vector3(0, 1, 0)))
+	local half = span * 0.5
+	render.set_projection(vmath.matrix4_orthographic(-half * w / h, half * w / h, -half, half, -3000, 3000))
+	render.enable_state(graphics.STATE_DEPTH_TEST)
+	render.set_depth_func(graphics.COMPARE_FUNC_LEQUAL)
+	render.disable_state(graphics.STATE_CULL_FACE)
+	render.disable_state(graphics.STATE_BLEND)
+	render.draw(self.world)
+	render.disable_state(graphics.STATE_DEPTH_TEST)
+	render.set_depth_mask(false)
+	-- Selection feedback stays visible above the instanced unit meshes.
+	render.draw(self.selection)
+	render.set_view(vmath.matrix4())
+	render.set_projection(vmath.matrix4_orthographic(0, ui_w, 0, ui_h, -1, 1))
+	render.enable_state(graphics.STATE_BLEND)
+	render.set_blend_func(graphics.BLEND_FACTOR_SRC_ALPHA, graphics.BLEND_FACTOR_ONE_MINUS_SRC_ALPHA)
+	render.draw(self.overlay)
+	render.draw(self.radar)
+	render.draw(self.overlay_top)
+	render.set_projection(vmath.matrix4_orthographic(0, render.get_window_width(), 0, render.get_window_height(), -1, 1))
+	render.enable_state(graphics.STATE_STENCIL_TEST)
+	render.draw(self.gui)
+	render.draw(self.text)
+	render.disable_state(graphics.STATE_STENCIL_TEST)
+end
+
+function final(self)
+	if self.target then render.delete_render_target(self.target) end
+end

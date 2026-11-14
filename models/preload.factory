@@ -1,0 +1,2 @@
+prototype: "/models/preload.go"
+load_dynamically: false

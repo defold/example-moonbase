@@ -1,0 +1,109 @@
+local selene = vmath.vector4(0.36, 0.73, 1.0, 1)
+local helios = vmath.vector4(0.90, 0.39, 0.32, 1)
+local cream = vmath.vector4(0.94, 0.96, 0.96, 1)
+local muted = vmath.vector4(0.70, 0.79, 0.82, 1)
+local disabled = vmath.vector4(0.47, 0.55, 0.59, 1)
+local warning = vmath.vector4(0.92, 0.69, 0.34, 1)
+
+local function text(self, id, content, x, y, font, color, scale, pivot)
+	local node = self.nodes[id]
+	if not node then
+		node = gui.new_text_node(vmath.vector3(), content)
+		gui.set_font(node, font)
+		gui.set_pivot(node, pivot)
+		gui.set_adjust_mode(node, gui.ADJUST_STRETCH)
+		self.nodes[id] = node
+	end
+	gui.set_text(node, content)
+	gui.set_color(node, color)
+	local sx = gui.get_width() / self.screen_w * self.ui_scale
+	local sy = gui.get_height() / self.screen_h * self.ui_scale
+	gui.set_position(node, vmath.vector3(x * sx, y * sy, 0))
+	gui.set_scale(node, vmath.vector3(sx * scale, sy * scale, 1))
+end
+
+local function number(value)
+	local s = tostring(math.floor(value))
+	return s:reverse():gsub("(%d%d%d)", "%1,"):reverse():gsub("^,", "")
+end
+
+function init(self)
+	self.nodes = {}
+	self.refresh = 0
+end
+
+function update(self, dt)
+	local s = moonbase.stats()
+	self.screen_w, self.screen_h = s.width, s.height
+	self.ui_scale = math.min(1, s.width / 1440)
+	local w, h = s.width / self.ui_scale, s.height / self.ui_scale
+	local left, center, right = gui.PIVOT_W, gui.PIVOT_CENTER, gui.PIVOT_E
+	local fps = s.frame_ms > 0 and math.min(999, 1000 / s.frame_ms) or 60
+	local delta = s.delta_ms
+	local delta_text = delta < 100 and string.format("%.2f ms", delta) or string.format("%.1f ms", math.min(delta, 999.9))
+	text(self, "delta_label", "Frame delta", w - 110, h - 17, "body", muted, 1, center)
+	text(self, "frame", delta_text, w - 110, h - 40, "performance", delta <= 17.5 and cream or warning, 1, center)
+	text(self, "simulation", string.format("Sim %.2f ms", s.simulation_ms), w - 198, h - 64, "body", muted, 1, left)
+	text(self, "fps", string.format("%.0f fps", fps), w - 26, h - 64, "body", muted, 1, right)
+	self.refresh = self.refresh - dt
+	if self.refresh > 0 then return end
+	self.refresh = 0.10
+
+	text(self, "title", "MoonBase", 24, h - 32, "heading", cream, 1, left)
+	text(self, "subtitle", "Relay Wars", 25, h - 57, "body", muted, 1, left)
+	text(self, "selene", "Selene", 248, h - 25, "heading", selene, 1, left)
+	text(self, "selene_units", number(s.cyan) .. " units", 481, h - 24, "body", cream, 1, right)
+	text(self, "selene_hq", string.format("Headquarters  %d%%", s.cyan_hp / 10), 239, h - 46, "body", muted, 1, left)
+	text(self, "helios", "Helios", w - 470, h - 25, "heading", helios, 1, left)
+	text(self, "helios_units", number(s.amber) .. " units", w - 239, h - 24, "body", cream, 1, right)
+	text(self, "helios_hq", string.format("Headquarters  %d%%", s.amber_hp / 10), w - 478, h - 46, "body", muted, 1, left)
+	local title = "Destroy enemy HQ"
+	local mode = "Relays drain its health"
+	if s.paused == 1 then title = "Battle paused" end
+	if s.winner >= 0 then
+		title = s.winner == 0 and "Selene victorious" or "Helios victorious"
+		mode = "Restart to fight again"
+	end
+	text(self, "battle", title, w / 2, h - 23, "heading", cream, 1, center)
+	text(self, "mode", mode, w / 2, h - 44, "body", muted, 1, center)
+	text(self, "time", string.format("%02d:%02d", math.floor(s.time / 60), math.floor(s.time % 60)), w / 2 + 103, h - 64, "body", muted, 1, center)
+	local finished = s.winner >= 0
+	text(self, "result_title", finished and (s.winner == 0 and "SELENE WINS" or "HELIOS WINS") or "", w / 2, h / 2 + 100, "performance", s.winner == 0 and selene or helios, 1, center)
+	text(self, "result_reason", finished and (s.winner == 0 and "Helios HQ destroyed" or "Selene HQ destroyed") or "", w / 2, h / 2 + 64, "heading", cream, 1, center)
+	text(self, "result_restart", finished and "Press R or Restart for a new battle" or "", w / 2, h / 2 + 27, "body", muted, 1, center)
+	text(self, "radar", "Battle map", 24, 196, "body", cream, 1, left)
+
+	text(self, "selection", s.selected > 0 and "Selected forces" or "Army groups", 226, 185, "heading", cream, 1, left)
+	text(self, "selected_count", s.selected > 0 and number(s.selected) or "", 682, 185, "heading", selene, 1, right)
+	local kinds = {{"Scout", s.scout}, {"Assault", s.assault}, {"Siege", s.siege}, {"Support", s.support}}
+	for i, kind in ipairs(kinds) do
+		local x = 226 + (i - 1) * 116
+		text(self, "kind" .. i, kind[1], x + 52, 92, "body", cream, 1, center)
+		text(self, "key" .. i, tostring(i), x + 16, 150, "body", muted, 1, center)
+		text(self, "amount" .. i, tostring(kind[2]), x + 92, 117, "body", kind[2] > 0 and selene or muted, 1, right)
+	end
+	local hint = s.selected > 0 and "Right-click to move your selection." or "Drag around troops or choose an army group."
+	if s.attack_move == 1 then hint = "Right-click a destination to attack-move." end
+	text(self, "hint", hint, 226, 54, "body", s.attack_move == 1 and warning or cream, 1, left)
+	text(self, "camera_hint", "WASD to pan    Mouse wheel to zoom", 226, 30, "body", muted, 1, left)
+	text(self, "orders", "Orders", 722, 185, "heading", cream, 1, left)
+
+	-- Match the native button grid in GetHudButtonRect.
+	local labels = {"Move", "Attack", "Hold", s.paused == 1 and "Resume" or "Pause", s.autoplay == 1 and "Take over" or "Autopilot", "Restart"}
+	local keys = {"RMB", "F", "H", "Spc", "Tab", "R"}
+	for i, label in ipairs(labels) do
+		local x = 720 + ((i - 1) % 3) * 98
+		local y = i <= 3 and 108 or 40
+		text(self, "command" .. i, label, x + 44, y + 13, "body", i <= 3 and s.selected == 0 and disabled or cream, 1, center)
+		text(self, "command_key" .. i, keys[i], x + 81, y + 45, "body", muted, 0.75, right)
+	end
+
+	text(self, "capacity", "Army size", 1040, 185, "heading", cream, 1, left)
+	text(self, "units", number(s.count) .. " units", 1040 + (w - 1160) / 2, 148, "heading", selene, 1, center)
+	text(self, "capacity_hint", s.count >= 32768 and "32K steps / restarts the battle" or "Changing size restarts the battle", 1040, 115, "body", muted, 1, left)
+	local button_width = (w - 1072) * 0.5
+	text(self, "home", "Home base", 1040 + button_width / 2, 53, "body", cream, 1, center)
+	text(self, "home_key", "Home", 1040 + button_width - 7, 85, "body", muted, 0.75, right)
+	text(self, "overview", "Full map", 1052 + button_width * 1.5, 53, "body", cream, 1, center)
+	text(self, "overview_key", "End", 1045 + button_width * 2, 85, "body", muted, 0.75, right)
+end

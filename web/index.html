@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>{{project.title}}</title>
+	<style>
+		html, body { margin: 0; width: 100%; height: 100%; overflow: hidden; background: #1c262b; }
+		.canvas-app-container { position: absolute; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; }
+		#canvas-container { position: relative; }
+		#canvas { display: block; outline: none; border: 0; width: 100%; }
+	</style>
+</head>
+<body>
+	<div id="app-container" class="canvas-app-container">
+		<div id="canvas-container" class="canvas-app-canvas-container">
+			<canvas id="canvas" tabindex="1" width="{{display.width}}" height="{{display.height}}"></canvas>
+		</div>
+	</div>
+	<script src="dmloader.js"></script>
+	<script>
+		// Let requestAnimationFrame own browser pacing, with one update per callback.
+		CUSTOM_PARAMETERS.engine_arguments.push("--config=display.update_frequency=0");
+		const query = new URLSearchParams(location.search);
+		if (["webgpu", "webgl"].includes(query.get("graphics"))) {
+			const backend = query.get("graphics") === "webgpu" ? "webgpu" : "opengl";
+			CUSTOM_PARAMETERS.engine_arguments.push(`--graphics-adapter=${backend}`);
+		}
+		const options = [
+			["units", "moonbase.units", 512, 262144],
+			["frames", "moonbase.exit_after_frames", 180, 2160],
+			["smoke", "moonbase.smoke_test", 0, 1]
+		];
+		for (const [name, key, min, max] of options) {
+			if (!query.has(name)) continue;
+			const value = Number(query.get(name));
+			if (Number.isInteger(value) && value >= min && value <= max) {
+				CUSTOM_PARAMETERS.engine_arguments.push(`--config=${key}=${value}`);
+			}
+		}
+		CUSTOM_PARAMETERS.engine_arguments.push("game.projectc");
+		// Game archives are raw bytes. New Emscripten versions make createPreloadedFile
+		// asynchronous even for byte arrays; createDataFile keeps startup synchronous.
+		Module.preloadAll = function() {
+			if (Module._preLoadDone) return;
+			Module._preLoadDone = true;
+			for (const item of Module._filesToPreload) {
+				FS.createDataFile("", item.path, item.data, true, true, true);
+			}
+			Module._filesToPreload.length = 0;
+		};
+		EngineLoader.load("canvas", "{{exe-name}}");
+	</script>
+</body>
+</html>

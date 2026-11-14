@@ -1,0 +1,22 @@
+name: "moon_unit"
+tags: "moon_world"
+vertex_program: "/render/unit.vp"
+fragment_program: "/render/world.fp"
+vertex_space: VERTEX_SPACE_LOCAL
+vertex_constants {
+  name: "view_proj"
+  type: CONSTANT_TYPE_VIEWPROJ
+  value { x: 0 y: 0 z: 0 w: 0 }
+}
+attributes {
+  name: "instance_position"
+  vector_type: VECTOR_TYPE_VEC4
+  step_function: VERTEX_STEP_FUNCTION_INSTANCE
+  double_values { v: 0 v: 0 v: 0 v: 0 }
+}
+attributes {
+  name: "instance_data"
+  vector_type: VECTOR_TYPE_VEC4
+  step_function: VERTEX_STEP_FUNCTION_INSTANCE
+  double_values { v: 0 v: 0 v: 0 v: 0 }
+}

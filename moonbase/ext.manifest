@@ -1,0 +1,5 @@
+name: MoonBase
+platforms:
+    common:
+        context:
+            libs: ["datastore", "BulletDynamics", "BulletCollision", "LinearMath"]

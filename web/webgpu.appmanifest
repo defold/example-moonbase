@@ -1,0 +1,7 @@
+platforms:
+    wasm-web:
+        context:
+            excludeLibs: [graphics_opengl]
+            excludeSymbols: [GraphicsAdapterOpenGL]
+            libs: [graphics_webgpu]
+            symbols: [GraphicsAdapterWebGPU]

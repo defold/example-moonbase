@@ -1,0 +1,26 @@
+-- Pin the native renderer's materials in the authored dependency graph.
+go.property("terrain_material", resource.material("/render/terrain.material"))
+go.property("world_material", resource.material("/render/world.material"))
+go.property("overlay_material", resource.material("/render/overlay.material"))
+go.property("overlay_top_material", resource.material("/render/overlay_top.material"))
+go.property("selection_material", resource.material("/render/selection.material"))
+go.property("radar_material", resource.material("/render/radar.material"))
+
+function init(self)
+	assert(moonbase, "MoonBase requires the native engine built with tools/build.py")
+	moonbase.bind()
+	self.frames = 0
+	self.exit_after = sys.get_config_int("moonbase.exit_after_frames", 0)
+end
+
+function update(self, dt)
+	moonbase.present()
+	self.frames = self.frames + 1
+	if self.exit_after > 0 and self.frames >= self.exit_after then
+		msg.post("@system:", "exit", {code = moonbase.stats().smoke_failed})
+	end
+end
+
+function final(self)
+	moonbase.unbind()
+end

@@ -1,0 +1,12 @@
+#version 140
+in vec3 position;
+in vec4 instance_position;
+in vec4 instance_data;
+out vec4 var_color;
+uniform vertex_uniforms { mat4 view_proj; };
+void main() {
+    vec3 world = vec3(position.x * instance_data.w + instance_position.x,
+                      0.15, position.z * instance_data.w + instance_position.y);
+    gl_Position = view_proj * vec4(world, 1.0);
+    var_color = vec4(0.58, 0.88, 0.29, 1.0);
+}

@@ -1,0 +1,10 @@
+name: "moon_terrain"
+tags: "moon_world"
+vertex_program: "/render/terrain.vp"
+fragment_program: "/render/terrain.fp"
+vertex_space: VERTEX_SPACE_LOCAL
+vertex_constants {
+  name: "view_proj"
+  type: CONSTANT_TYPE_VIEWPROJ
+  value { x: 0 y: 0 z: 0 w: 0 }
+}

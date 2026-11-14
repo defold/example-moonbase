@@ -1,0 +1,47 @@
+[project]
+title = MoonBase | Relay Wars
+version = 1.0
+custom_resources = /main/fonts/OFL.txt
+
+[bootstrap]
+main_collection = /main/main.collectionc
+render = /render/moonbase.renderc
+
+[display]
+width = 1440
+height = 900
+high_dpi = 0
+vsync = 1
+update_frequency = 60
+swap_interval = 1
+
+[engine]
+datastore = 1
+
+[input]
+game_binding = /input/game.input_bindingc
+
+[physics]
+type = 3D
+gravity_y = 0
+max_collision_object_count = 32
+
+[collection]
+max_instances = 32
+
+[graphics]
+max_draw_calls = 64
+max_characters = 8192
+
+[shader]
+output_glsl330 = 1
+output_spirv = 1
+
+[moonbase]
+units = 32768
+exit_after_frames = 0
+
+[html5]
+htmlfile = /web/index.html
+show_fullscreen_button = 0
+show_made_with_defold = 0

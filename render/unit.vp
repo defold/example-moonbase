@@ -1,0 +1,25 @@
+#version 140
+in vec3 position;
+in vec3 normal;
+in vec4 color;
+in vec4 instance_position;
+in vec4 instance_data;
+out vec4 var_color;
+uniform vertex_uniforms { mat4 view_proj; };
+void main() {
+    // Local forward is -Z. Rotate the shared model into its simulation heading.
+    vec2 heading = instance_position.zw;
+    mat2 rotation = mat2(-heading.y, heading.x, -heading.x, -heading.y);
+    vec3 world = vec3(rotation * position.xz, position.y).xzy;
+    world.xz += instance_position.xy;
+    vec3 n = vec3(rotation * normal.xz, normal.y).xzy;
+    float light = 0.48 + 0.52 * max(dot(normalize(n), normalize(vec3(-0.5, 1.0, 0.7))), 0.0);
+    vec3 team = mix(vec3(0.27, 0.61, 0.94), vec3(0.77, 0.24, 0.20), instance_data.x);
+    vec3 albedo = mix(color.rgb, team, color.a);
+    albedo = mix(albedo, vec3(0.90, 0.95, 1.0), min(instance_data.z * 2.0, 0.30));
+    // Selected units remain distinct even when dense formations cover their ground rings.
+    albedo = mix(albedo, vec3(0.58, 0.88, 0.29), instance_data.y * 0.65);
+    light = mix(light, max(light, 0.80), instance_data.y);
+    var_color = vec4(albedo * light, 1.0);
+    gl_Position = view_proj * vec4(world, 1.0);
+}
