@@ -186,10 +186,11 @@ namespace Moon
         DataStoreIterator it = DataStoreQueryIterRange(query, first, count);
         while (DataStoreIterNext(&it))
         {
-            DataStoreRowIterator rows = DataStoreIterRows(&it);
-            while (DataStoreRowIterNext(&rows))
+            uint32_t row_count;
+            Unit* units = (Unit*)DataStoreIterGetDataMutable(&it, &row_count);
+            for (uint32_t row_index = 0; row_index < row_count; ++row_index)
             {
-                const Unit* u = (const Unit*)DataStoreRowIterGetData(&rows);
+                const Unit* u = &units[row_index];
                 b->m_Snapshot[u->m_Index] = *u;
                 if (!Alive(*u))
                 {
@@ -267,10 +268,11 @@ namespace Moon
         DataStoreIterator it = DataStoreQueryIterRange(query, first, count);
         while (DataStoreIterNext(&it))
         {
-            DataStoreRowIterator rows = DataStoreIterRows(&it);
-            while (DataStoreRowIterNext(&rows))
+            uint32_t row_count;
+            Unit* units = (Unit*)DataStoreIterGetDataMutable(&it, &row_count);
+            for (uint32_t row_index = 0; row_index < row_count; ++row_index)
             {
-                Unit* u = (Unit*)DataStoreRowIterGetDataMut(&rows);
+                Unit* u = &units[row_index];
                 u->m_Fired = 0;
                 u->m_Flash = fmaxf(0, u->m_Flash - b->m_Dt);
                 if (!Alive(*u))
@@ -378,10 +380,11 @@ namespace Moon
         DataStoreIterator it = DataStoreQueryIterRange(query, first, count);
         while (DataStoreIterNext(&it))
         {
-            DataStoreRowIterator rows = DataStoreIterRows(&it);
-            while (DataStoreRowIterNext(&rows))
+            uint32_t row_count;
+            Unit* units = (Unit*)DataStoreIterGetDataMutable(&it, &row_count);
+            for (uint32_t row_index = 0; row_index < row_count; ++row_index)
             {
-                Unit* u = (Unit*)DataStoreRowIterGetDataMut(&rows);
+                Unit* u = &units[row_index];
                 if (!Alive(*u))
                 {
                     continue;
@@ -475,10 +478,11 @@ namespace Moon
         DataStoreIterator it = DataStoreQueryIterRange(query, first, count);
         while (DataStoreIterNext(&it))
         {
-            DataStoreRowIterator rows = DataStoreIterRows(&it);
-            while (DataStoreRowIterNext(&rows))
+            uint32_t row_count;
+            Unit* units = (Unit*)DataStoreIterGetDataMutable(&it, &row_count);
+            for (uint32_t row_index = 0; row_index < row_count; ++row_index)
             {
-                const Unit* u = (const Unit*)DataStoreRowIterGetData(&rows);
+                const Unit* u = &units[row_index];
                 if (u->m_Fired && b->m_Dt > 0)
                 {
                     if (u->m_Target < b->m_Count)
@@ -496,10 +500,11 @@ namespace Moon
         it = DataStoreQueryIterRange(query, first, count);
         while (DataStoreIterNext(&it))
         {
-            DataStoreRowIterator rows = DataStoreIterRows(&it);
-            while (DataStoreRowIterNext(&rows))
+            uint32_t row_count;
+            Unit* units = (Unit*)DataStoreIterGetDataMutable(&it, &row_count);
+            for (uint32_t row_index = 0; row_index < row_count; ++row_index)
             {
-                Unit* u = (Unit*)DataStoreRowIterGetDataMut(&rows);
+                Unit* u = &units[row_index];
                 if (Alive(*u))
                 {
                     u->m_Health = fminf(SPECS[u->m_Kind].m_Health, u->m_Health - b->m_Damage[u->m_Index]);
@@ -796,10 +801,11 @@ namespace Moon
         DataStoreIterator it = DataStoreQueryIter(b->m_Query);
         while (DataStoreIterNext(&it))
         {
-            DataStoreRowIterator rows = DataStoreIterRows(&it);
-            while (DataStoreRowIterNext(&rows))
+            uint32_t row_count;
+            Unit* units = (Unit*)DataStoreIterGetDataMutable(&it, &row_count);
+            for (uint32_t row_index = 0; row_index < row_count; ++row_index)
             {
-                Unit* u = (Unit*)DataStoreRowIterGetDataMut(&rows);
+                Unit* u = &units[row_index];
                 bool chosen = false;
                 if (u->m_Team == 0 && Alive(*u))
                 {
@@ -834,10 +840,11 @@ namespace Moon
         DataStoreIterator it = DataStoreQueryIter(b->m_Query);
         while (DataStoreIterNext(&it))
         {
-            DataStoreRowIterator rows = DataStoreIterRows(&it);
-            while (DataStoreRowIterNext(&rows))
+            uint32_t row_count;
+            Unit* units = (Unit*)DataStoreIterGetDataMutable(&it, &row_count);
+            for (uint32_t row_index = 0; row_index < row_count; ++row_index)
             {
-                Unit* u = (Unit*)DataStoreRowIterGetDataMut(&rows);
+                Unit* u = &units[row_index];
                 if (!u->m_Selected || u->m_Team || !Alive(*u))
                 {
                     continue;
@@ -880,10 +887,11 @@ namespace Moon
         DataStoreIterator it = DataStoreQueryIter(b->m_Query);
         while (DataStoreIterNext(&it))
         {
-            DataStoreRowIterator rows = DataStoreIterRows(&it);
-            while (DataStoreRowIterNext(&rows))
+            uint32_t row_count;
+            Unit* units = (Unit*)DataStoreIterGetDataMutable(&it, &row_count);
+            for (uint32_t row_index = 0; row_index < row_count; ++row_index)
             {
-                Unit* u = (Unit*)DataStoreRowIterGetDataMut(&rows);
+                Unit* u = &units[row_index];
                 if (u->m_Selected)
                 {
                     u->m_GoalX = X(*u);

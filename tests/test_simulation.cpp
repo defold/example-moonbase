@@ -139,7 +139,7 @@ static void DenseTargeting(HJobContext jobs, uint32_t defenders)
         DataStoreRowIterator rows = DataStoreIterRows(&it);
         while (DataStoreRowIterNext(&rows))
         {
-            Moon::Unit* u = (Moon::Unit*)DataStoreRowIterGetDataMut(&rows);
+            Moon::Unit* u = (Moon::Unit*)DataStoreRowIterGetDataMutable(&rows);
             bool guard = u->m_Team == defenders;
             u->m_Kind = Moon::ASSAULT;
             u->m_Health = guard || u->m_Index == intruder ? Moon::SPECS[Moon::ASSAULT].m_Health : 0;
