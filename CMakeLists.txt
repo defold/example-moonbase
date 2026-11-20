@@ -34,6 +34,7 @@ set(MOONBASE_SOURCES moonbase/src/simulation.cpp moonbase/src/geometry.cpp moonb
 # Compile into the normal engine target to inherit its exact SDK and link configuration.
 target_sources(dmengine PRIVATE ${MOONBASE_SOURCES})
 target_include_directories(dmengine BEFORE PRIVATE
+    "${CMAKE_CURRENT_SOURCE_DIR}/moonbase/include"
     "${DEFOLD_SOURCE}/engine/engine/src"
     "${DEFOLD_SOURCE}/engine/extension/src"
     "${DEFOLD_SOURCE}/engine/input/src"
